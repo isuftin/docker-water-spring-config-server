@@ -22,7 +22,7 @@ before_install:
 
 install:
   - cd .travis
-  - docker-compose -f docker-compose up -d --build
+  - docker-compose -f up -d --build
   - cd ..
 
 script:
