@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/ash
+# shellcheck shell=dash
 
 maxHeapSpace=${maxHeapSpace:-"300M"}
 keystorePassword=`cat $KEYSTORE_PASSWORD_FILE`
@@ -9,7 +10,7 @@ if [ -z "$keystorePassword" ]; then
   exit 1
 fi
 
-app_jar="/app.jar"
+app_jar="${HOME}/app.jar"
 if [ -f $app_jar ]; then
     java -Xmx$maxHeapSpace -Djava.security.egd=file:/dev/./urandom -jar -DkeystorePassword=$keystorePassword $app_jar "$@"
 else

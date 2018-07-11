@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/ash
+# shellcheck shell=dash
 
 keystoreLocation=${keystoreLocation:-""}
 keystoreSSLKey=${keystoreSSLKey:-"tomcat"}
@@ -17,8 +18,11 @@ elif [ ! -f "${KEYSTORE_PASSWORD_FILE}" ]; then
 fi
 
 if [ -n "${TOMCAT_CERT_PATH}" ] && [ -n "${TOMCAT_KEY_PATH}" ] && [ -f "${TOMCAT_CERT_PATH}" ] && [ -f "${TOMCAT_KEY_PATH}" ]; then
-  rm $keystoreLocation
+  if [ -f $keystoreLocation ]; then
+    rm $keystoreLocation
+  fi
   keystorePassword=`cat $KEYSTORE_PASSWORD_FILE`
+  keytool -importkeystore -srckeystore /etc/ssl/certs/java/cacerts -srcstorepass $keystorePassword -destkeystore $JAVA_KEYSTORE -deststorepass $keystorePassword
   openssl pkcs12 -export -in $TOMCAT_CERT_PATH -inkey $TOMCAT_KEY_PATH -name $keystoreSSLKey -out tomcat.pkcs12 -password pass:$keystorePassword
   keytool -v -importkeystore -deststorepass $keystorePassword -destkeystore $keystoreLocation -deststoretype PKCS12 -srckeystore tomcat.pkcs12 -srcstorepass $keystorePassword -srcstoretype PKCS12 -noprompt
 fi
@@ -39,7 +43,7 @@ if [ -n "${CERT_IMPORT_DIRECTORY}" ] && [ -d "${CERT_IMPORT_DIRECTORY}" ]; then
   done
 fi
 
-launch_app="/launch_app.sh"
+launch_app="${HOME}/launch_app.sh"
 if [ -f "${launch_app}" ]; then
   if [ ! -x "${launch_app}" ]; then
     chmod +x $launch_app
