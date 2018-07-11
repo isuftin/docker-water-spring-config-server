@@ -28,7 +28,7 @@ install:
 script:
   - cd docker-bench-security
   - sudo sh docker-bench-security.sh -c container_images
-  - docker ps | grep -q water-auth-server
+  - docker ps | grep -q $DOCKER_IMAGE
   - for run in {1..20};do sleep 1;if docker logs $DOCKER_IMAGE 2>&1 | grep -q "Started Application"; then echo "Application is running";break;else echo "Still checking for application startup. Check ${run} of 20";fi;done
   - curl -s -k -f https://127.0.0.1:8888/actuator/health --silent 2>&1 | grep -q '{"status":"UP"}'
   - docker run -d --name db arminc/clair-db
