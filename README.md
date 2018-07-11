@@ -1,0 +1,1 @@
+# WMA Spring Config Server

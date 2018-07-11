@@ -1,0 +1,17 @@
+---
+  version: '3.5'
+
+  services:
+    server:
+      container_name: water-spring-config-server
+      build: .
+      image: water-spring-config-server
+      ports:
+        - "8888:8888"
+      volumes:
+        - .travis/configs:/configs/:ro
+        - .travis/secrets:/secrets/:ro
+        - .travis/certs:/certs/:ro
+        - .travis/configuration:/configuration/:ro
+      env_file:
+        - docker-compose.env
