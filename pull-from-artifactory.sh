@@ -1,4 +1,5 @@
-#!/bin/sh -e
+#!/bin/ash
+# shellcheck shell=dash
 
 repo_url="https://cida.usgs.gov/artifactory/$1"
 group=$2

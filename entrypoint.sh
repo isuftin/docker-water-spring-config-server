@@ -18,11 +18,18 @@ elif [ ! -f "${KEYSTORE_PASSWORD_FILE}" ]; then
 fi
 
 if [ -n "${TOMCAT_CERT_PATH}" ] && [ -n "${TOMCAT_KEY_PATH}" ] && [ -f "${TOMCAT_CERT_PATH}" ] && [ -f "${TOMCAT_KEY_PATH}" ]; then
+  # If the previous keystore location exists, remove it as I will create a new
+  # file there
   if [ -f $keystoreLocation ]; then
     rm $keystoreLocation
   fi
+  # Grab the keystore password from a file
   keystorePassword=`cat $KEYSTORE_PASSWORD_FILE`
-  keytool -importkeystore -srckeystore /etc/ssl/certs/java/cacerts -srcstorepass $keystorePassword -destkeystore $JAVA_KEYSTORE -deststorepass $keystorePassword
+  # Because I am the root user, I cannot write to the system java keystore.
+  # Therefore I copy the Java keystore to a local area. The source location
+  # for the Java keystore is /etc/ssl/certs/java/cacerts for this image
+  # (openjdk:8-jdk-alpine) but may differ on other images
+  keytool -importkeystore -srckeystore /etc/ssl/certs/java/cacerts -srcstorepass $JAVA_STOREPASS -destkeystore $JAVA_KEYSTORE -deststorepass $JAVA_STOREPASS
   openssl pkcs12 -export -in $TOMCAT_CERT_PATH -inkey $TOMCAT_KEY_PATH -name $keystoreSSLKey -out tomcat.pkcs12 -password pass:$keystorePassword
   keytool -v -importkeystore -deststorepass $keystorePassword -destkeystore $keystoreLocation -deststoretype PKCS12 -srckeystore tomcat.pkcs12 -srcstorepass $keystorePassword -srcstoretype PKCS12 -noprompt
 fi
