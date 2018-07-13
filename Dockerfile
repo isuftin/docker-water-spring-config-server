@@ -1,5 +1,7 @@
 FROM openjdk:8-jdk-alpine
 
+LABEL maintaner="isuftin@usgs.gov"
+
 ENV version=LATEST
 ENV CERT_IMPORT_DIRECTORY=/certs
 ENV JAVA_KEYSTORE=/home/spring/cacerts
